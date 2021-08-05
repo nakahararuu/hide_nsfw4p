@@ -56,6 +56,7 @@ async function hasNsfwArtworks(page) {
 	// 非公開に設定
 	await page.waitForSelector('div[role="button"]:has-text("非公開にする")');
 	await page.click('div[role="button"]:has-text("非公開にする")');
+	await page.waitForSelector('text=ブックマーク管理');
 
 	await browser.close();
 })();
