@@ -1,6 +1,18 @@
 const { chromium } = require('playwright');
 const { existsSync } = require('fs');
 
+// ログインした後、CookieやLocalStrageをファイルにダンプ（次回以降のブラウザ起動時に使い回すため）
+async function loginAndStoreAuthenticationState(page, authenticationStateFilePath) {
+	await page.click('text=ログイン');
+	await page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', process.env.PIXIV_LOGIN_ID);
+	await page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', process.env.PIXIV_PASSWORD);
+	await Promise.all([
+		page.waitForNavigation(),
+		page.click('#LoginComponent >> text=ログイン')
+	]);
+	await page.context().storageState({ path: authenticationStateFilePath });
+}
+
 async function openBookmarkPage(browser) {
 	const authenticationStateFilePath = '.state/state.json';
 	const hasAuthenticationState = existsSync(authenticationStateFilePath)
@@ -13,16 +25,8 @@ async function openBookmarkPage(browser) {
 	await page.setViewportSize({ width: 1280, height: 696 });
 	await navigationPromise;
 
-	// 未ログインであればログイン。その後CookieやLocalStrageをファイルにダンプして次回以降のブラウザ起動時に使い回す。
 	if(!hasAuthenticationState) {
-		await page.click('text=ログイン');
-		await page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', process.env.PIXIV_LOGIN_ID);
-		await page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', process.env.PIXIV_PASSWORD);
-		await Promise.all([
-			page.waitForNavigation(),
-			page.click('#LoginComponent >> text=ログイン')
-		]);
-		await page.context().storageState({ path: authenticationStateFilePath });
+		await  loginAndStoreAuthenticationState(page, authenticationStateFilePath);
 	}
 
 	return page;
