@@ -1,11 +1,12 @@
 const { chromium } = require('playwright');
 const { existsSync } = require('fs');
+const { PIXIV_LOGIN_ID, PIXIV_PASSWORD, PIXIV_USER_ID } = process.env;
 
 // ログインした後、CookieやLocalStrageをファイルにダンプ（次回以降のブラウザ起動時に使い回すため）
 async function loginAndStoreAuthenticationState(page, authenticationStateFilePath) {
 	await page.click('text=ログイン');
-	await page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', process.env.PIXIV_LOGIN_ID);
-	await page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', process.env.PIXIV_PASSWORD);
+	await page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', PIXIV_LOGIN_ID);
+	await page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', PIXIV_PASSWORD);
 	await Promise.all([
 		page.waitForNavigation(),
 		page.click('#LoginComponent >> text=ログイン')
@@ -21,7 +22,7 @@ async function openBookmarkPage(browser) {
 	const page = await context.newPage();
 	const navigationPromise = page.waitForNavigation();
 	
-	await page.goto(`https://www.pixiv.net/users/${process.env.PIXIV_USER_ID}/bookmarks/artworks`);
+	await page.goto(`https://www.pixiv.net/users/${PIXIV_USER_ID}/bookmarks/artworks`);
 	await page.setViewportSize({ width: 1280, height: 696 });
 	await navigationPromise;
 
