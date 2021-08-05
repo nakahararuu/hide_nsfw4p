@@ -1,0 +1,21 @@
+{
+  "name": "lambda-cron",
+  "version": "0.0.1",
+  "description": "Running a Lambda on a schedule",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/node": "^10.17.0",
+    "typescript": "~3.7.2"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-events": "~1.116",
+    "@aws-cdk/aws-events-targets": "~1.116",
+    "@aws-cdk/aws-lambda": "~1.116",
+    "@aws-cdk/core": "~1.116"
+  }
+}
