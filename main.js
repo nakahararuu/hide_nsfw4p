@@ -26,7 +26,7 @@ async function openBookmarkPage(browser) {
 	await navigationPromise;
 
 	if(!hasAuthenticationState) {
-		await  loginAndStoreAuthenticationState(page, authenticationStateFilePath);
+		await loginAndStoreAuthenticationState(page, authenticationStateFilePath);
 	}
 
 	return page;
@@ -41,7 +41,7 @@ async function hasNsfwArtworks(page) {
 	const browser = await chromium.launch();
 	const page = await openBookmarkPage(browser);
 
-	if(!(await hasNsfwArtworks(page))){
+	if(!await hasNsfwArtworks(page)){
 		await browser.close();
 		return;
 	}
