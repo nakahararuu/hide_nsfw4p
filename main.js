@@ -1,23 +1,37 @@
 const { chromium } = require('playwright');
+const { existsSync } = require('fs');
 
-(async () => {
+async function openBookmarkPage() {
+	const authenticationStateFilePath = '.state/state.json';
+	const hasAuthenticationState = existsSync(authenticationStateFilePath)
+
 	const browser = await chromium.launch();
-	const page = await browser.newPage();
+	const context = await browser.newContext(hasAuthenticationState ? { storageState: authenticationStateFilePath } : {});
+	const page = await context.newPage();
 	const navigationPromise = page.waitForNavigation();
 	
-  	await page.goto(`https://www.pixiv.net/?return_to=%2Fusers%2F${process.env.PIXIV_USER_ID}%2Fbookmarks%2Fartworks`);
+	await page.goto(`https://www.pixiv.net/users/${process.env.PIXIV_USER_ID}/bookmarks/artworks`);
 	await page.setViewportSize({ width: 1280, height: 696 });
 	await navigationPromise;
 
-	// ログイン
-	await page.click('text=ログイン');
-	await page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', process.env.PIXIV_LOGIN_ID);
-	await page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', process.env.PIXIV_PASSWORD);
-	await Promise.all([
-		page.waitForNavigation(/*{ url: 'https://www.pixiv.net/users/192633/bookmarks/artworks' }*/),
-		page.click('#LoginComponent >> text=ログイン')
-	]);
-	
+	// 未ログインであればログイン。その後CookieやLocalStrageをファイルにダンプして次回以降のブラウザ起動時に使い回す。
+	if(!hasAuthenticationState) {
+		await page.click('text=ログイン');
+		await page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', process.env.PIXIV_LOGIN_ID);
+		await page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', process.env.PIXIV_PASSWORD);
+		await Promise.all([
+			page.waitForNavigation(/*{ url: 'https://www.pixiv.net/users/192633/bookmarks/artworks' }*/),
+			page.click('#LoginComponent >> text=ログイン')
+		]);
+		await page.context().storageState({ path: authenticationStateFilePath });
+	}
+
+	return page;
+}
+ 
+(async () => {
+	const page = await openBookmarkPage();
+
 	// ブックマークの編集を開始
 	await page.waitForSelector('text=ブックマーク管理');
 	await page.click('text=ブックマーク管理');
@@ -32,4 +46,3 @@ const { chromium } = require('playwright');
 
 	await browser.close();
 })();
-

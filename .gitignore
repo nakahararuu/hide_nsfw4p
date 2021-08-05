@@ -1,3 +1,6 @@
+# State files for a browser
+.state/
+
 # Logs
 logs
 *.log
