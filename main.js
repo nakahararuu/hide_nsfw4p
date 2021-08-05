@@ -20,7 +20,7 @@ async function openBookmarkPage() {
 		await page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', process.env.PIXIV_LOGIN_ID);
 		await page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', process.env.PIXIV_PASSWORD);
 		await Promise.all([
-			page.waitForNavigation(/*{ url: 'https://www.pixiv.net/users/192633/bookmarks/artworks' }*/),
+			page.waitForNavigation(),
 			page.click('#LoginComponent >> text=ログイン')
 		]);
 		await page.context().storageState({ path: authenticationStateFilePath });
