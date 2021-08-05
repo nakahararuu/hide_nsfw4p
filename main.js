@@ -24,17 +24,12 @@ const { chromium } = require('playwright');
 	
 	// R-18のものをすべてクリック
 	await page.waitForSelector('text=R-18')
-	const targets = await page.$$('text=R-18').forEach(e => e.click())
+	await page.$$eval('text=R-18', elements => elements.forEach(e => e.click()))
 	
 	// 非公開に設定
-	await page.waitForSelector('text=非公開にする')
-	await page.click('text=非公開にする')
+	await page.waitForSelector('div[role="button"]:has-text("非公開にする")')
+	await page.click('div[role="button"]:has-text("非公開にする")');
 
 	await browser.close()
 })();
-
-
-
-
-
 
