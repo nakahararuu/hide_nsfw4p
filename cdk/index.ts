@@ -1,6 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
+import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 
 import fs = require('fs');
@@ -15,6 +16,9 @@ export class LambdaCronStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(300),
       runtime: lambda.Runtime.PYTHON_3_6,
     });
+
+    const bucket = new s3.Bucket(this, 'MyBucket', { 'lifecycleRules': [{expiration: cdk.Duration.days(1)}] });
+    bucket.grantReadWrite(lambdaFn);
 
     // Run 6:00 PM UTC every Monday through Friday
     // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html

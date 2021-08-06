@@ -16,6 +16,7 @@
     "@aws-cdk/aws-events": "~1.116",
     "@aws-cdk/aws-events-targets": "~1.116",
     "@aws-cdk/aws-lambda": "~1.116",
+    "@aws-cdk/aws-s3": "~1.116.0",
     "@aws-cdk/core": "~1.116"
   }
 }
