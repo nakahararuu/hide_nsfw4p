@@ -3,6 +3,7 @@ import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
+import ssm = require('@aws-cdk/aws-ssm');
 
 import fs = require('fs');
 
@@ -15,6 +16,11 @@ export class LambdaCronStack extends cdk.Stack {
       handler: 'index.main',
       timeout: cdk.Duration.seconds(300),
       runtime: lambda.Runtime.PYTHON_3_6,
+      environment: {
+        PIXIV_LOGIN_ID: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_id'),
+        PIXIV_PASSWORD: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_password'),
+        PIXIV_USER_ID: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_user_id')
+      }
     });
 
     const bucket = new s3.Bucket(this, 'MyBucket', { 'lifecycleRules': [{expiration: cdk.Duration.days(1)}] });
