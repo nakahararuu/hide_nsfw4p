@@ -1,21 +1,17 @@
 import events = require('@aws-cdk/aws-events');
 import targets = require('@aws-cdk/aws-events-targets');
-import lambda = require('@aws-cdk/aws-lambda');
+import lambda = require('@aws-cdk/aws-lambda-nodejs');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import ssm = require('@aws-cdk/aws-ssm');
-
-import fs = require('fs');
 
 export class LambdaCronStack extends cdk.Stack {
   constructor(app: cdk.App, id: string) {
     super(app, id);
 
-    const lambdaFn = new lambda.Function(this, 'Singleton', {
-      code: new lambda.InlineCode(fs.readFileSync('lambda-handler.py', { encoding: 'utf-8' })),
-      handler: 'index.main',
+    const lambdaFn = new lambda.NodejsFunction(this, 'Singleton', {
+      entry: 'lambda-handler.js',
       timeout: cdk.Duration.seconds(300),
-      runtime: lambda.Runtime.PYTHON_3_6,
       environment: {
         PIXIV_LOGIN_ID: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_id'),
         PIXIV_PASSWORD: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_password'),
