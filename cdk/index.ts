@@ -9,17 +9,18 @@ export class LambdaCronStack extends cdk.Stack {
   constructor(app: cdk.App, id: string) {
     super(app, id);
 
+    const bucket = new s3.Bucket(this, 'MyBucket', { 'lifecycleRules': [{expiration: cdk.Duration.days(1)}] });
+
     const lambdaFn = new lambda.NodejsFunction(this, 'Singleton', {
       entry: 'lambda-handler.js',
       timeout: cdk.Duration.seconds(300),
       environment: {
         PIXIV_LOGIN_ID: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_id'),
         PIXIV_PASSWORD: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_password'),
-        PIXIV_USER_ID: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_user_id')
+        PIXIV_USER_ID: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_user_id'),
+        BUCKET_NAME: bucket.bucketName
       }
     });
-
-    const bucket = new s3.Bucket(this, 'MyBucket', { 'lifecycleRules': [{expiration: cdk.Duration.days(1)}] });
     bucket.grantReadWrite(lambdaFn);
 
     // Run 6:00 PM UTC every Monday through Friday

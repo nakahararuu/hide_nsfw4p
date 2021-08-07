@@ -19,6 +19,7 @@
     "@aws-cdk/aws-lambda-nodejs": "~1.116",
     "@aws-cdk/aws-s3": "~1.116",
     "@aws-cdk/aws-ssm": "~1.116",
-    "@aws-cdk/core": "~1.116"
+    "@aws-cdk/core": "~1.116",
+    "@aws-sdk/client-s3": "^3.25.0"
   }
 }
