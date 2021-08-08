@@ -5,7 +5,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import ssm = require('@aws-cdk/aws-ssm');
 
-export class LambdaCronStack extends cdk.Stack {
+export class HideNsfw4pStack extends cdk.Stack {
   constructor(app: cdk.App, id: string) {
     super(app, id);
 
@@ -34,5 +34,5 @@ export class LambdaCronStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new LambdaCronStack(app, 'LambdaCronExample');
+new HideNsfw4pStack(app, 'HideNSFW4p');
 app.synth();
