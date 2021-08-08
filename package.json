@@ -8,7 +8,7 @@
     "run-locally": "RUN_LOCALLY=true node src/main.js",
     "build": "tsc",
     "watch": "tsc -w",
-    "deploy": "cdk deploy",
+    "deploy": "npm run build && cdk deploy",
     "detroy": "cdk destroy"
   },
   "repository": {
