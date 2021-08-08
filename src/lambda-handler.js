@@ -19,7 +19,7 @@ exports.handler = async function(event, lambdaContext) {
 	await navigationPromise;
 
 	const text = await page.$eval('text=nakahararuu / hide_nsfw4p', el => el.innerText);
-	cosole.log(`repository name is ${text}`);
+	console.log(`repository name is ${text}`);
 
 	await browser.close();
 
