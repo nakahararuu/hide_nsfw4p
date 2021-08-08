@@ -12,7 +12,7 @@ export class LambdaCronStack extends cdk.Stack {
     const bucket = new s3.Bucket(this, 'MyBucket', { 'lifecycleRules': [{expiration: cdk.Duration.days(1)}] });
 
     const lambdaFn = new lambda.NodejsFunction(this, 'Singleton', {
-      entry: 'lambda-handler.js',
+      entry: 'src/lambda-handler.js',
       timeout: cdk.Duration.seconds(300),
       environment: {
         PIXIV_LOGIN_ID: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_id'),
