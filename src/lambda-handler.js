@@ -12,11 +12,13 @@ exports.handler = async function(event, lambdaContext) {
 
 	const context = await browser.newContext();
 	const page = await context.newPage();
+	const navigationPromise = page.waitForNavigation();
 
 	await page.goto('https://github.com/nakahararuu/hide_nsfw4p');
-	await page.waitForNavigation();
+	await page.setViewportSize({ width: 1280, height: 696 });
+	await navigationPromise;
 
-	const text = await page.$evel('text=nakahararuu / hide_nsfw4p', el => el.innerText);
+	const text = await page.$eval('text=nakahararuu / hide_nsfw4p', el => el.innerText);
 	cosole.log(`repository name is ${text}`);
 
 	await browser.close();
