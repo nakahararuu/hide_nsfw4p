@@ -19,7 +19,8 @@ export class HideNsfw4pStack extends cdk.Stack {
         PIXIV_PASSWORD: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_password'),
         PIXIV_USER_ID: ssm.StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_user_id'),
         BUCKET_NAME: bucket.bucketName
-      }
+      },
+      bundling: { externalModules: ['electron/index.js'] }
     });
     bucket.grantReadWrite(lambdaFn);
 
