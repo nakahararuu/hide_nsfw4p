@@ -1,7 +1,7 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+const { S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand } = require("@aws-sdk/client-s3");
 
-import * as path from "path";
-import * as fs from "fs";
+const path = require("path");
+const fs = require("fs");
 
 // TODO 環境変数から取得
 const s3 = new S3Client({ region: "ap-northeast-1" });
@@ -11,7 +11,7 @@ const isLocal = (RUN_LOCALLY == 'true');
 const tmpFile = isLocal ? ".state/state.json" : "/tmp/state.json";
 
 // TODO ログ推敲
-async function storeState(context) {
+exports.storeState = async function(context) {
 	await context.storageState({ path: tmpFile });
 	if(isLocal) {
 		return;
@@ -30,7 +30,7 @@ async function storeState(context) {
 	}
 }
 
-async function restoreState(browser) {
+exports.restoreState = async function(browser) {
 	if(isLocal){
 		return await browser.newContext({ storageState: tmpFile });
 	}
@@ -54,7 +54,7 @@ async function restoreState(browser) {
 	}
 }
 
-async function hasState() {
+exports.hasState = async function() {
 	if(isLocal) {
 		return fs.existsSync(tmpFile);
 	}
@@ -71,4 +71,3 @@ async function hasState() {
 	}
 }
 
-export {storeState, restoreState, hasState};
