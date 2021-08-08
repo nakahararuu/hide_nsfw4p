@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "the script to hide NSFW artworks of pixiv bookmark.",
   "private": true,
+  "type": "module",
   "scripts": {
     "test-locally": "PWDEBUG=1 npm run run-locally",
     "run-locally": "RUN_LOCALLY=true node src/main.js",

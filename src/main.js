@@ -1,5 +1,6 @@
-const { storeState, restoreState, hasState } = require('./browserStateStrage.js');
-const { chromium } = require('playwright');
+import { storeState, restoreState, hasState } from './browserStateStrage.js';
+import { chromium } from 'playwright';
+
 const { PIXIV_LOGIN_ID, PIXIV_PASSWORD, PIXIV_USER_ID } = process.env;
 
 // ログインした後、CookieやLocalStrageをファイルにダンプ（次回以降のブラウザ起動時に使い回すため）

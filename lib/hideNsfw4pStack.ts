@@ -1,9 +1,9 @@
-import events = require('@aws-cdk/aws-events');
-import targets = require('@aws-cdk/aws-events-targets');
-import lambda = require('@aws-cdk/aws-lambda-nodejs');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import ssm = require('@aws-cdk/aws-ssm');
+import * as events from '@aws-cdk/aws-events';
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as lambda from '@aws-cdk/aws-lambda-nodejs';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as ssm from '@aws-cdk/aws-ssm';
 
 export class HideNsfw4pStack extends cdk.Stack {
   constructor(app: cdk.App, id: string) {
