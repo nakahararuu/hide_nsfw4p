@@ -4,10 +4,8 @@
   "description": "the script to hide NSFW artworks of pixiv bookmark.",
   "private": true,
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "deploy": "npm run build && cdk deploy",
-    "detroy": "cdk destroy"
+    "test-locally": "PWDEBUG=1 npm run run-locally",
+    "run-locally": "RUN_LOCALLY=true node main.js"
   },
   "repository": {
     "type": "git",
@@ -20,13 +18,9 @@
   },
   "homepage": "https://github.com/nakahararuu/hide_nsfw4p#readme",
   "devDependencies": {
-    "@aws-cdk/aws-events": "~1.116",
-    "@aws-cdk/aws-events-targets": "~1.116",
-    "@aws-cdk/aws-lambda": "~1.116",
-    "@aws-cdk/aws-s3": "~1.116",
-    "@aws-cdk/aws-ssm": "~1.116",
-    "@aws-cdk/core": "~1.116",
-    "@types/node": "^10.17.0",
+    "@aws-sdk/client-s3": "^3.25.0",
+    "chrome-aws-lambda": "^10.1.0",
+    "playwright-core": "^1.13.1",
     "typescript": "~3.7.2"
   }
 }

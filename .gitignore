@@ -1,5 +1,10 @@
-# State files for a browser
+# State files for Browser
 .state/
+
+# CDK dest files
+cdk.out/
+bin/*.js
+lib/*.js
 
 # Logs
 logs

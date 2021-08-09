@@ -1,9 +1,10 @@
-const { chromium } = require('playwright');
-const { existsSync } = require('fs');
+const { storeState, restoreState, hasState } = require('./browserStateStrage.js');
+const chromium = require('chrome-aws-lambda');
+const playwright = require('playwright-core');
 const { PIXIV_LOGIN_ID, PIXIV_PASSWORD, PIXIV_USER_ID } = process.env;
 
 // ログインした後、CookieやLocalStrageをファイルにダンプ（次回以降のブラウザ起動時に使い回すため）
-async function loginAndStoreAuthenticationState(page, authenticationStateFilePath) {
+async function loginAndStoreAuthenticationState(page) {
 	await page.click('text=ログイン');
 	await page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', PIXIV_LOGIN_ID);
 	await page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', PIXIV_PASSWORD);
@@ -11,14 +12,13 @@ async function loginAndStoreAuthenticationState(page, authenticationStateFilePat
 		page.waitForNavigation(),
 		page.click('#LoginComponent >> text=ログイン')
 	]);
-	await page.context().storageState({ path: authenticationStateFilePath });
+	await storeState(page.context());
 }
 
 async function openBookmarkPage(browser) {
-	const authenticationStateFilePath = '.state/state.json';
-	const hasAuthenticationState = existsSync(authenticationStateFilePath)
+	const hasAuthenticationState = await hasState();
 
-	const context = await browser.newContext(hasAuthenticationState ? { storageState: authenticationStateFilePath } : {});
+	const context = hasAuthenticationState ? await restoreState(browser) : await browser.newContext();
 	const page = await context.newPage();
 	const navigationPromise = page.waitForNavigation();
 	
@@ -27,7 +27,7 @@ async function openBookmarkPage(browser) {
 	await navigationPromise;
 
 	if(!hasAuthenticationState) {
-		await loginAndStoreAuthenticationState(page, authenticationStateFilePath);
+		await loginAndStoreAuthenticationState(page);
 	}
 
 	return page;
@@ -38,8 +38,12 @@ async function hasNsfwArtworks(page) {
 	return nsfwArtworks.length > 0;
 }
 
-(async () => {
-	const browser = await chromium.launch();
+exports.main = async function() {
+	const browser = await playwright.chromium.launch({
+		args: chromium.args,
+		executablePath: await chromium.executablePath,
+		headless: chromium.headless,
+	});
 	const page = await openBookmarkPage(browser);
 
 	if(!await hasNsfwArtworks(page)){
@@ -60,4 +64,4 @@ async function hasNsfwArtworks(page) {
 	await page.waitForSelector('text=ブックマーク管理');
 
 	await browser.close();
-})();
+};
