@@ -26,7 +26,6 @@
     "@aws-cdk/aws-s3": "~1.116",
     "@aws-cdk/aws-ssm": "~1.116",
     "@aws-cdk/core": "~1.116",
-    "@aws-sdk/client-s3": "^3.25.0",
     "@types/node": "^10.17.0",
     "typescript": "~3.7.2"
   }
