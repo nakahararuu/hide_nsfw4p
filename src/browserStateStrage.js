@@ -64,9 +64,10 @@ exports.hasState = async function() {
 		Key: path.basename(tmpFile)
 	};
 	try {
-		await s3.send(new HeadObjectCommand());
+		await s3.send(new HeadObjectCommand(headParams));
 		return true;
 	} catch (err) {
+		console.log("Error", err);
 		return false;
 	}
 }
