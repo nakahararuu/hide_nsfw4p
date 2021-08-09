@@ -1,5 +1,6 @@
 const { storeState, restoreState, hasState } = require('./browserStateStrage.js');
-const { chromium } = require('playwright');
+const chromium = require('chrome-aws-lambda');
+const playwright = require('playwright-core');
 const { PIXIV_LOGIN_ID, PIXIV_PASSWORD, PIXIV_USER_ID } = process.env;
 
 // ログインした後、CookieやLocalStrageをファイルにダンプ（次回以降のブラウザ起動時に使い回すため）
@@ -37,8 +38,12 @@ async function hasNsfwArtworks(page) {
 	return nsfwArtworks.length > 0;
 }
 
-(async () => {
-	const browser = await chromium.launch();
+exports.main = async function() {
+	const browser = await playwright.chromium.launch({
+		args: chromium.args,
+		executablePath: await chromium.executablePath,
+		headless: chromium.headless,
+	});
 	const page = await openBookmarkPage(browser);
 
 	if(!await hasNsfwArtworks(page)){
@@ -59,4 +64,4 @@ async function hasNsfwArtworks(page) {
 	await page.waitForSelector('text=ブックマーク管理');
 
 	await browser.close();
-})();
+};
