@@ -30,10 +30,8 @@ export class HideNsfw4pStack extends cdk.Stack {
     });
     bucket.grantReadWrite(lambdaFn);
 
-    // Run 6:00 PM UTC every Monday through Friday
-    // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
     const rule = new events.Rule(this, 'Rule', {
-      schedule: events.Schedule.expression('cron(0 18 ? * MON-FRI *)')
+      schedule: events.Schedule.rate(cdk.Duration.hours(5))
     });
 
     rule.addTarget(new targets.LambdaFunction(lambdaFn));
