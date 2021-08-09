@@ -24,9 +24,9 @@ exports.storeState = async function(context) {
 	};
 	try {
 		const data = await s3.send(new PutObjectCommand(uploadParams));
-		console.log("upload done", data);
+		console.log("upload authentication state file Done");
 	} catch (err) {
-		console.log("Error", err);
+		console.log("upload authentication state file Error", err);
 	}
 }
 
@@ -41,15 +41,13 @@ exports.restoreState = async function(browser) {
 	};
 	try {
 		const data = await s3.send(new GetObjectCommand(getParams));
-		console.log("download done", data);
-
 		const ws = fs.createWriteStream(tmpFile);
 		data.Body.pipe(ws);
-		data.Body.on('end',()=>console.log('write file done'));
+		data.Body.on('end',()=>console.log("download authentication state file Done"));
 
 		return await browser.newContext({ storageState: tmpFile });
 	} catch (err) {
-		console.log("Error", err);
+		console.log("download authentication state file Error", err);
 		return await browser.newContext();
 	}
 }
@@ -67,7 +65,7 @@ exports.hasState = async function() {
 		await s3.send(new HeadObjectCommand(headParams));
 		return true;
 	} catch (err) {
-		console.log("Error", err);
+		console.log("get authentication state metadata Error", err);
 		return false;
 	}
 }

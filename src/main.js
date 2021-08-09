@@ -48,10 +48,12 @@ exports.main = async function() {
 
 	if(!await hasNsfwArtworks(page)){
 		await browser.close();
+		console.log('There is no NSFW pic.');
 		return;
 	}
 
 	// ブックマークの編集を開始
+	console.log('Start bookmark updating.');
 	await page.waitForSelector('text=ブックマーク管理');
 	await page.click('text=ブックマーク管理');
 	
