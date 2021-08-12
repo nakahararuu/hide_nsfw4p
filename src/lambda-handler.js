@@ -1,9 +1,7 @@
-const chromium = require('chrome-aws-lambda');
-const playwright = require('playwright-core');
-const { main } = require('./main.js');
+const hideNsfw4p = require('./hideNsfw4p.js');
 
 exports.handler = async function(event, lambdaContext) {
 	console.log('Start');
-	await main();
+	await hideNsfw4p();
 	console.log('End');
 };

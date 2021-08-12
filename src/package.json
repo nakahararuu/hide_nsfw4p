@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test-locally": "PWDEBUG=1 npm run run-locally",
-    "run-locally": "RUN_LOCALLY=true node main.js"
+    "run-locally": "RUN_LOCALLY=true node local-main.js"
   },
   "repository": {
     "type": "git",
