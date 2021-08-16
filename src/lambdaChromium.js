@@ -10,6 +10,21 @@ const { BUCKET_NAME, RUN_LOCALLY } = process.env;
 const isLocal = (RUN_LOCALLY == 'true');
 const tmpFile = isLocal ? ".state/state.json" : "/tmp/state.json";
 
+exports.openBrowser = async function() {
+	if(isLocal){
+		const { chromium } = require('playwright');
+		return await chromium.launch();
+	} else {
+		const chromium = require('chrome-aws-lambda');
+		const playwright = require('playwright-core');
+		return  await playwright.chromium.launch({
+			args: chromium.args,
+			executablePath: await chromium.executablePath,
+			headless: chromium.headless,
+		});
+	}
+}
+
 // TODO ログ推敲
 exports.storeState = async function(context) {
 	await context.storageState({ path: tmpFile });
