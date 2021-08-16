@@ -1,7 +1,4 @@
-const { storeState, restoreState, hasState } = require('./browserStateStrage.js');
-
-const chromium = require('chrome-aws-lambda');
-const playwright = require('playwright-core');
+const { openBrowser, storeState, restoreState, hasState } = require('./lambdaChromium.js');
 
 const { PIXIV_LOGIN_ID, PIXIV_PASSWORD, PIXIV_USER_ID } = process.env;
 
@@ -20,17 +17,8 @@ exports.BookmarkPage = class {
 		]);
 		await storeState(page.context());
 	}
-
-	async _openBrowser() {
-		this.browser = await playwright.chromium.launch({
-			args: chromium.args,
-			executablePath: await chromium.executablePath,
-			headless: chromium.headless,
-		});
-	}
-
 	async openBookmarkPage() {
-		await this._openBrowser();
+		this.browser = await openBrowser();
 
 		const hasAuthenticationState = await hasState();
 
