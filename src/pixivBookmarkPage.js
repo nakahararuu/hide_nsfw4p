@@ -34,6 +34,7 @@ exports.BookmarkPage = class {
 			await this._loginAndStoreAuthenticationState(page);
 		}
 
+		await page.waitForSelector('text=ブックマーク管理');
 		this.page = page;
 	}
 
