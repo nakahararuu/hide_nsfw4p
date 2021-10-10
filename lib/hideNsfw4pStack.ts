@@ -9,7 +9,10 @@ export class HideNsfw4pStack extends cdk.Stack {
   constructor(app: cdk.App, id: string) {
     super(app, id);
 
-    const bucket = new s3.Bucket(this, 'MyBucket', { 'lifecycleRules': [{expiration: cdk.Duration.days(1)}] });
+    // https://github.com/nakahararuu/hide_nsfw4p/issues/1 の問題が解消されるまで
+    // ログイン情報は破棄しない（できるだけログイン回数を削減）
+    // const bucket = new s3.Bucket(this, 'MyBucket', { 'lifecycleRules': [{expiration: cdk.Duration.days(1)}] });
+    const bucket = new s3.Bucket(this, 'MyBucket');
 
     const lambdaFn = new lambda.DockerImageFunction(this, 'Singleton', {
 	    code: lambda.DockerImageCode.fromImageAsset('src/', {
