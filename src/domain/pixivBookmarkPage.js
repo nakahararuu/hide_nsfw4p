@@ -2,13 +2,12 @@ const { openBrowser, storeState, restoreState, hasState, snapshot } = require('.
 
 const { PIXIV_LOGIN_ID, PIXIV_PASSWORD, PIXIV_USER_ID } = process.env;
 
-exports.BookmarkPage = class {
+class BookmarkPage {
+	static #URL = `https://www.pixiv.net/users/${PIXIV_USER_ID}/bookmarks/artworks`;
+
 	#browser;
 	#context;
 	#page;
-
-	constructor() {
-	}
 
 	// ログインした後、CookieやLocalStrageをファイルにダンプ（次回以降のブラウザ起動時に使い回すため）
 	async #loginAndStoreAuthenticationState() {
@@ -30,12 +29,12 @@ exports.BookmarkPage = class {
 		this.#page = await this.#context.newPage();
 
 		const navigationPromise = this.#page.waitForNavigation();
-		await this.#page.goto(`https://www.pixiv.net/users/${PIXIV_USER_ID}/bookmarks/artworks`);
+		await this.#page.goto(BookmarkPage.#URL);
 		await this.#page.setViewportSize({ width: 1280, height: 696 });
 		await navigationPromise;
 
-		if(!hasAuthenticationState) {
-			console.log('authentication state file not found. trying relogin.');
+		if(this.#page.url() !== BookmarkPage.#URL) {
+			console.log('valid authentication state (cookie, localstrage) file not found. trying login.');
 			await this.#loginAndStoreAuthenticationState(this.#page);
 		}
 
@@ -71,3 +70,4 @@ exports.BookmarkPage = class {
 	}
 };
 
+exports.BookmarkPage = BookmarkPage;
