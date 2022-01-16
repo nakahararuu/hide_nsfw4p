@@ -1,4 +1,4 @@
-const { openBrowser, storeState, restoreState, hasState } = require('./lambdaChromium.js');
+const { openBrowser, storeState, restoreState, hasState } = require('./chromium.js');
 
 const { PIXIV_LOGIN_ID, PIXIV_PASSWORD, PIXIV_USER_ID } = process.env;
 
@@ -17,6 +17,7 @@ exports.BookmarkPage = class {
 		]);
 		await storeState(page.context());
 	}
+
 	async openBookmarkPage() {
 		this.browser = await openBrowser();
 
