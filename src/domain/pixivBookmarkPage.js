@@ -35,6 +35,7 @@ exports.BookmarkPage = class {
 		await navigationPromise;
 
 		if(!hasAuthenticationState) {
+			console.log('authentication state file not found. trying relogin.');
 			await this.#loginAndStoreAuthenticationState(this.#page);
 		}
 
