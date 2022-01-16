@@ -7,9 +7,15 @@ exports.hideNsfw4pService = class {
 		try {
 			await this.#runScript();
 		} catch (error) {
-			await this.#bookmarkPageObject.snapshot(`error-${Date.now()}`);
-			await this.#bookmarkPageObject.close();
-			throw error;
+			try {
+				console.log('trying to take snapshot of the error');
+				await this.#bookmarkPageObject.snapshot(`error-${Date.now()}`);
+			} catch (snapshotError) {
+				console.error('failed to take snapshot', snapshotError);
+			} finally {
+				await this.#bookmarkPageObject.close();
+				throw error;
+			}
 		}
 	};
 
