@@ -3,11 +3,14 @@ const { openBrowser, storeState, restoreState, hasState } = require('../runtime/
 const { PIXIV_LOGIN_ID, PIXIV_PASSWORD, PIXIV_USER_ID } = process.env;
 
 exports.BookmarkPage = class {
+	#browser;
+	#page;
+
 	constructor() {
 	}
 
 	// ログインした後、CookieやLocalStrageをファイルにダンプ（次回以降のブラウザ起動時に使い回すため）
-	async _loginAndStoreAuthenticationState(page) {
+	async #loginAndStoreAuthenticationState(page) {
 		await page.click('text=ログイン');
 		await page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', PIXIV_LOGIN_ID);
 		await page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', PIXIV_PASSWORD);
@@ -19,11 +22,11 @@ exports.BookmarkPage = class {
 	}
 
 	async openBookmarkPage() {
-		this.browser = await openBrowser();
+		this.#browser = await openBrowser();
 
 		const hasAuthenticationState = await hasState();
 
-		const context = hasAuthenticationState ? await restoreState(this.browser) : await this.browser.newContext();
+		const context = hasAuthenticationState ? await restoreState(this.#browser) : await this.#browser.newContext();
 		const page = await context.newPage();
 		const navigationPromise = page.waitForNavigation();
 
@@ -32,35 +35,35 @@ exports.BookmarkPage = class {
 		await navigationPromise;
 
 		if(!hasAuthenticationState) {
-			await this._loginAndStoreAuthenticationState(page);
+			await this.#loginAndStoreAuthenticationState(page);
 		}
 
 		await page.waitForSelector('text=ブックマーク管理');
-		this.page = page;
+		this.#page = page;
 	}
 
 	async hasNsfwArtworks() {
-		const nsfwArtworks = await this.page.$$('text=R-18');
+		const nsfwArtworks = await this.#page.$$('text=R-18');
 		return nsfwArtworks.length > 0;
 	}
 
 	async clickBookmarkManagmentButton() {
-		await this.page.waitForSelector('text=ブックマーク管理');
-		await this.page.click('text=ブックマーク管理');
+		await this.#page.waitForSelector('text=ブックマーク管理');
+		await this.#page.click('text=ブックマーク管理');
 	}
 
 	async clickNsfwPics() {
-		await this.page.$$eval('text=R-18', elements => elements.forEach(e => e.click()));
+		await this.#page.$$eval('text=R-18', elements => elements.forEach(e => e.click()));
 	}
 
 	async clickHideBookmarkButton() {
-		await this.page.waitForSelector('div[role="button"]:has-text("非公開にする")');
-		await this.page.click('div[role="button"]:has-text("非公開にする")');
-		await this.page.waitForSelector('text=ブックマーク管理');
+		await this.#page.waitForSelector('div[role="button"]:has-text("非公開にする")');
+		await this.#page.click('div[role="button"]:has-text("非公開にする")');
+		await this.#page.waitForSelector('text=ブックマーク管理');
 	}
 
 	async close() {
-		await this.browser.close();
+		await this.#browser.close();
 	}
 };
 
