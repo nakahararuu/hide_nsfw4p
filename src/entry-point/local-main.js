@@ -1,5 +1,6 @@
-const hideNsfw4p = require('../domain/hideNsfw4p.js');
+const { hideNsfw4pService } = require('../domain/hideNsfw4p.js');
 
 (async function() {
-	await hideNsfw4p();
+	const service = new hideNsfw4pService();
+	await service.execute();
 })();

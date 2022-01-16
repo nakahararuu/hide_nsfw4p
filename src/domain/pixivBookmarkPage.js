@@ -1,45 +1,44 @@
-const { openBrowser, storeState, restoreState, hasState } = require('../runtime/chromium.js');
+const { openBrowser, storeState, restoreState, hasState, snapshot } = require('../runtime/chromium.js');
 
 const { PIXIV_LOGIN_ID, PIXIV_PASSWORD, PIXIV_USER_ID } = process.env;
 
 exports.BookmarkPage = class {
 	#browser;
+	#context;
 	#page;
 
 	constructor() {
 	}
 
 	// ログインした後、CookieやLocalStrageをファイルにダンプ（次回以降のブラウザ起動時に使い回すため）
-	async #loginAndStoreAuthenticationState(page) {
-		await page.click('text=ログイン');
-		await page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', PIXIV_LOGIN_ID);
-		await page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', PIXIV_PASSWORD);
+	async #loginAndStoreAuthenticationState() {
+		await this.#page.click('text=ログイン');
+		await this.#page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', PIXIV_LOGIN_ID);
+		await this.#page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', PIXIV_PASSWORD);
 		await Promise.all([
-			page.waitForNavigation(),
-			page.click('#LoginComponent >> text=ログイン')
+			this.#page.waitForNavigation(),
+			this.#page.click('#LoginComponent >> text=ログイン')
 		]);
-		await storeState(page.context());
+		await storeState(this.#context);
 	}
 
 	async openBookmarkPage() {
-		this.#browser = await openBrowser();
-
 		const hasAuthenticationState = await hasState();
 
-		const context = hasAuthenticationState ? await restoreState(this.#browser) : await this.#browser.newContext();
-		const page = await context.newPage();
-		const navigationPromise = page.waitForNavigation();
+		this.#browser = await openBrowser();
+		this.#context = hasAuthenticationState ? await restoreState(this.#browser) : await this.#browser.newContext();
+		this.#page = await this.#context.newPage();
 
-		await page.goto(`https://www.pixiv.net/users/${PIXIV_USER_ID}/bookmarks/artworks`);
-		await page.setViewportSize({ width: 1280, height: 696 });
+		const navigationPromise = this.#page.waitForNavigation();
+		await this.#page.goto(`https://www.pixiv.net/users/${PIXIV_USER_ID}/bookmarks/artworks`);
+		await this.#page.setViewportSize({ width: 1280, height: 696 });
 		await navigationPromise;
 
 		if(!hasAuthenticationState) {
-			await this.#loginAndStoreAuthenticationState(page);
+			await this.#loginAndStoreAuthenticationState(this.#page);
 		}
 
-		await page.waitForSelector('text=ブックマーク管理');
-		this.#page = page;
+		await this.#page.waitForSelector('text=ブックマーク管理');
 	}
 
 	async hasNsfwArtworks() {
@@ -64,6 +63,10 @@ exports.BookmarkPage = class {
 
 	async close() {
 		await this.#browser.close();
+	}
+
+	async snapshot(label) {
+		await snapshot(this.#page, label);
 	}
 };
 

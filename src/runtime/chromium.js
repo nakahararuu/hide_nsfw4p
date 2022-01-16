@@ -85,3 +85,28 @@ exports.hasState = async function() {
 	}
 }
 
+exports.snapshot = async function(page, label) {
+	if(isLocal) {
+		const filePath = `.state/snapshot/${label}.png`;
+		await page.screenshot({path: filePath});
+		console.log(`stored snapshot file at ${filePath}`);
+		return;
+	}
+
+	const fileName = `${label}.png`;
+	const tmpFilePath = `/tmp/${fileName}`;
+	await page.screenshot({path: tmpFilePath});
+
+	const uploadParams = {
+		Bucket: BUCKET_NAME,
+		Key: fileName,
+		Body: fs.createReadStream(tmpFilePath)
+	};
+	try {
+		await s3.send(new PutObjectCommand(uploadParams));
+		console.log(`uploaded snapshot file at ${BUCKET_NAME}/${fileName}`);
+	} catch (err) {
+		console.log("snapshot file uploading failed", err);
+	}
+}
+
