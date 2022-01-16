@@ -1,4 +1,4 @@
-const { openBrowser, storeState, restoreState, hasState } = require('./chromium.js');
+const { openBrowser, storeState, restoreState, hasState } = require('../runtime/chromium.js');
 
 const { PIXIV_LOGIN_ID, PIXIV_PASSWORD, PIXIV_USER_ID } = process.env;
 

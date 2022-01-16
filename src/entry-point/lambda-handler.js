@@ -1,4 +1,4 @@
-const hideNsfw4p = require('./hideNsfw4p.js');
+const hideNsfw4p = require('../domain/hideNsfw4p.js');
 
 exports.handler = async function(event, lambdaContext) {
 	console.log('Start');

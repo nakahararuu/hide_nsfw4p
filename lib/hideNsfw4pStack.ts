@@ -16,7 +16,7 @@ export class HideNsfw4pStack extends cdk.Stack {
 
     const lambdaFn = new lambda.DockerImageFunction(this, 'Singleton', {
 	    code: lambda.DockerImageCode.fromImageAsset('src/', {
-		    cmd: [ "lambda-handler.handler" ],
+		    cmd: [ "entry-point/lambda-handler.handler" ],
 		    entrypoint: ["/lambda-entrypoint.sh"]
 	    }),
 	    memorySize: 1800,
