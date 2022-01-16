@@ -17,6 +17,9 @@ exports.openBrowser = async function() {
 	} else {
 		const chromium = require('chrome-aws-lambda');
 		const playwright = require('playwright-core');
+
+		await chromium.font('https://fonts.gstatic.com/ea/notosansjapanese/v6/NotoSansJP-Regular.woff2');
+
 		return  await playwright.chromium.launch({
 			args: chromium.args,
 			executablePath: await chromium.executablePath,
