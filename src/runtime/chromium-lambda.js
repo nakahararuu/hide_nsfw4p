@@ -31,7 +31,6 @@ exports.storeState = async function(context) {
 
 	try {
 		await s3.send(new PutObjectCommand(uploadParams));
-		console.log("uploaded authentication state file");
 	} catch (err) {
 		console.error("authentication state file uploading failed", err);
 	}
@@ -42,7 +41,7 @@ exports.restoreState = async function(browser) {
 		await getS3Object(path.basename(tmpStateFile), tmpStateFile);
 		return await browser.newContext({ storageState: tmpStateFile });
 	} catch (err) {
-		console.error(err);
+		console.error(`failed to download authentication file from S3`, err);
 		return await browser.newContext();
 	}
 }
@@ -57,7 +56,7 @@ async function getS3Object(key, destPath){
 	return new Promise(async (resolve, reject) => {
 		const ws = fs.createWriteStream(destPath);
 		ws.on('finish', () => resolve());
-		ws.on('error', () => reject(`file downloading from S3 failed: S3 path[${key}], dest path[${destPath}]`));
+		ws.on('error', (err) => reject(err));
 		data.Body.pipe(ws);
 	});
 };
@@ -89,9 +88,8 @@ exports.snapshot = async function(page, label) {
 	};
 	try {
 		await s3.send(new PutObjectCommand(uploadParams));
-		console.log(`uploaded snapshot file at ${BUCKET_NAME}/${fileName}`);
 	} catch (err) {
-		console.log("snapshot file uploading failed", err);
+		console.error("snapshot file uploading failed", err);
 	}
 }
 

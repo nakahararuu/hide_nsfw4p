@@ -23,6 +23,9 @@ class BookmarkPage {
 
 	async openBookmarkPage() {
 		const hasAuthenticationState = await hasState();
+		if(hasAuthenticationState){
+			console.log('authentication state file found. trying to resotre it.');
+		}
 
 		this.#browser = await openBrowser();
 		this.#context = hasAuthenticationState ? await restoreState(this.#browser) : await this.#browser.newContext();
@@ -34,7 +37,7 @@ class BookmarkPage {
 		await navigationPromise;
 
 		if(this.#page.url() !== BookmarkPage.#URL) {
-			console.log('valid authentication state (cookie, localstrage) file not found. trying login.');
+			console.log('valid authentication state (cookie, localstrage) not found. trying login.');
 			await this.#loginAndStoreAuthenticationState(this.#page);
 		}
 
