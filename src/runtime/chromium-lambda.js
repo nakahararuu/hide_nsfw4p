@@ -38,23 +38,29 @@ exports.storeState = async function(context) {
 }
 
 exports.restoreState = async function(browser) {
-	const getParams = {
-		Bucket: BUCKET_NAME,
-		Key: path.basename(tmpStateFile)
-	};
-
 	try {
-		const data = await s3.send(new GetObjectCommand(getParams));
-		const ws = fs.createWriteStream(tmpStateFile);
-		data.Body.pipe(ws);
-		data.Body.on('end',()=>console.log("downloaded authentication state file"));
-
+		await getS3Object(path.basename(tmpStateFile), tmpStateFile);
 		return await browser.newContext({ storageState: tmpStateFile });
 	} catch (err) {
-		console.log("authentication state file downloading faild", err);
+		console.error(err);
 		return await browser.newContext();
 	}
 }
+
+async function getS3Object(key, destPath){
+	const getParams = {
+		Bucket: BUCKET_NAME,
+		Key: key
+	};
+	const data = await s3.send(new GetObjectCommand(getParams));
+
+	return new Promise(async (resolve, reject) => {
+		const ws = fs.createWriteStream(destPath);
+		ws.on('finish', () => resolve());
+		ws.on('error', () => reject(`file downloading from S3 failed: S3 path[${key}], dest path[${destPath}]`));
+		data.Body.pipe(ws);
+	});
+};
 
 exports.hasState = async function() {
 	const headParams = {
