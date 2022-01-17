@@ -16,6 +16,7 @@ export class HideNsfw4pStack extends cdk.Stack {
 		    cmd: [ "entry-point/lambda-handler.handler" ],
 		    entrypoint: ["/lambda-entrypoint.sh"]
 	    }),
+	    retryAttempts: 0,
 	    memorySize: 1800,
 	    timeout: cdk.Duration.seconds(300),
 	    environment: {
