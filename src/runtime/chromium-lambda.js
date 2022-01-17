@@ -33,7 +33,7 @@ exports.storeState = async function(context) {
 		await s3.send(new PutObjectCommand(uploadParams));
 		console.log("uploaded authentication state file");
 	} catch (err) {
-		console.log("authentication state file uploading faild", err);
+		console.error("authentication state file uploading failed", err);
 	}
 }
 
