@@ -1,6 +1,6 @@
-const { BookmarkPage } = require('./pixivBookmarkPage.js');
+import { BookmarkPage } from './pixivBookmarkPage.js';
 
-exports.hideNsfw4pService = class {
+export class HideNsfw4pService {
 	#bookmarkPageObject;
 
 	async execute() {

@@ -1,5 +1,4 @@
-const { RUN_LOCALLY } = process.env;
-const isLocal = (RUN_LOCALLY == 'true');
+const isLocal = (process.env.RUN_LOCALLY == 'true');
+const chromiumFunctions = await import(isLocal ? './chromium-local.js' : './chromium-lambda.js');
+export const { openBrowser, storeState, restoreState, hasState, snapshot } = chromiumFunctions;
 
-const functions = require(isLocal ? "./chromium-local.js" : "./chromium-lambda.js");
-Object.assign(exports, functions);

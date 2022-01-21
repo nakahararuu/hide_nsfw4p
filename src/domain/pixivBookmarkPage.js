@@ -1,8 +1,8 @@
-const { openBrowser, storeState, restoreState, hasState, snapshot } = require('../runtime/chromium.js');
+import { openBrowser, storeState, restoreState, hasState, snapshot } from '../runtime/chromium.js';
 
 const { PIXIV_LOGIN_ID, PIXIV_PASSWORD, PIXIV_USER_ID } = process.env;
 
-class BookmarkPage {
+export class BookmarkPage {
 	static #URL = `https://www.pixiv.net/users/${PIXIV_USER_ID}/bookmarks/artworks`;
 
 	#browser;
@@ -73,4 +73,3 @@ class BookmarkPage {
 	}
 };
 
-exports.BookmarkPage = BookmarkPage;

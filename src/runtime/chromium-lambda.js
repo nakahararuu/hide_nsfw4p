@@ -1,8 +1,8 @@
-const { S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand } = require("@aws-sdk/client-s3");
-const chromium = require('chrome-aws-lambda');
-const playwright = require('playwright-core');
-const path = require("path");
-const fs = require("fs");
+import { S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
+import { default as chromium } from 'chrome-aws-lambda';
+import * as playwright from 'playwright-core';
+import * as path from 'path';
+import * as fs from 'fs';
 
 // TODO 環境変数から取得
 const s3 = new S3Client({ region: "ap-northeast-1" });
@@ -10,7 +10,7 @@ const s3 = new S3Client({ region: "ap-northeast-1" });
 const { BUCKET_NAME } = process.env;
 const tmpStateFile = '/tmp/state.json';
 
-exports.openBrowser = async function() {
+export async function openBrowser() {
 	await chromium.font('https://fonts.gstatic.com/ea/notosansjapanese/v6/NotoSansJP-Regular.woff2');
 
 	return await playwright.chromium.launch({
@@ -20,7 +20,7 @@ exports.openBrowser = async function() {
 	});
 }
 
-exports.storeState = async function(context) {
+export async function storeState(context) {
 	await context.storageState({ path: tmpStateFile });
 
 	const uploadParams = {
@@ -36,7 +36,7 @@ exports.storeState = async function(context) {
 	}
 }
 
-exports.restoreState = async function(browser) {
+export async function restoreState(browser) {
 	try {
 		await getS3Object(path.basename(tmpStateFile), tmpStateFile);
 		return await browser.newContext({ storageState: tmpStateFile });
@@ -61,7 +61,7 @@ async function getS3Object(key, destPath){
 	});
 };
 
-exports.hasState = async function() {
+export async function hasState() {
 	const headParams = {
 		Bucket: BUCKET_NAME,
 		Key: path.basename(tmpStateFile)
@@ -76,7 +76,7 @@ exports.hasState = async function() {
 	}
 }
 
-exports.snapshot = async function(page, label) {
+export async function snapshot(page, label) {
 	const fileName = `${label}.png`;
 	const tmpFilePath = `/tmp/${fileName}`;
 	await page.screenshot({path: tmpFilePath});

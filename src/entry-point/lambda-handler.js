@@ -1,8 +1,8 @@
-const { hideNsfw4pService } = require('../domain/hideNsfw4p.js');
+import { HideNsfw4pService } from '../domain/hideNsfw4p.js';
 
-exports.handler = async function(event, lambdaContext) {
+export async function handler(event, lambdaContext) {
 	console.log('Start');
-	const service = new hideNsfw4pService();
+	const service = new HideNsfw4pService();
 	await service.execute();
 	console.log('End');
 };

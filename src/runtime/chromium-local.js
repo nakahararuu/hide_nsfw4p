@@ -1,27 +1,27 @@
-const path = require("path");
-const fs = require("fs");
-const { chromium } = require('playwright');
+import * as path from 'path';
+import * as fs from 'fs';
+import { chromium } from 'playwright';
 
 const stateFile = '.state/state.json';
 
-exports.openBrowser = async function() {
+export async function openBrowser() {
 	return await chromium.launch();
 }
 
-exports.storeState = async function(context) {
+export async function storeState(context) {
 	await context.storageState({ path: stateFile });
 	console.log(`stored authentication state into ${stateFile}` );
 }
 
-exports.restoreState = async function(browser) {
+export async function restoreState(browser) {
 	return await browser.newContext({ storageState: stateFile });
 }
 
-exports.hasState = async function() {
+export async function hasState() {
 	return fs.existsSync(stateFile);
 }
 
-exports.snapshot = async function(page, label) {
+export async function snapshot(page, label) {
 	const filePath = `.state/snapshot/${label}.png`;
 	await page.screenshot({path: filePath});
 	console.log(`stored snapshot file at ${filePath}`);
