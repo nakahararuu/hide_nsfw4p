@@ -1,7 +1,7 @@
 {
   "name": "hide_nsfw4p",
   "version": "0.0.1",
-  "description": "the script to hide NSFW artworks of pixiv bookmark.",
+  "description": "hide NSFW artworks in your pixiv bookmark page.",
   "private": true,
   "scripts": {
     "build": "tsc",
