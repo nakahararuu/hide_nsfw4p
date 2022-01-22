@@ -1,4 +1,4 @@
-import { App } from '@aws-cdk/core';
+import { App } from 'aws-cdk-lib';
 import { HideNsfw4pStack } from '../lib/hideNsfw4pStack';
 
 const app = new App();

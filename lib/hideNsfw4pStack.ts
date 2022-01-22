@@ -1,10 +1,9 @@
-import { Rule, Schedule } from '@aws-cdk/aws-events';
-import { LambdaFunction } from '@aws-cdk/aws-events-targets';
-import { DockerImageFunction, DockerImageCode } from '@aws-cdk/aws-lambda';
-
-import { Bucket } from '@aws-cdk/aws-s3';
-import { App, Stack, Duration } from '@aws-cdk/core';
-import { StringParameter } from '@aws-cdk/aws-ssm';
+import { App, Stack, Duration } from 'aws-cdk-lib';
+import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
+import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
+import { DockerImageFunction, DockerImageCode } from 'aws-cdk-lib/aws-lambda';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 export class HideNsfw4pStack extends Stack {
 	constructor(app: App, id: string) {
