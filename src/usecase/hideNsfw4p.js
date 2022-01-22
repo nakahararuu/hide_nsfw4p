@@ -1,4 +1,4 @@
-import { BookmarkPage } from './pixivBookmarkPage.js';
+import { BookmarkPage } from '../domain/pixivBookmarkPage.js';
 
 export class HideNsfw4pService {
 	#bookmarkPageObject;

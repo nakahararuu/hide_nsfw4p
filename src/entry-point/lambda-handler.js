@@ -1,4 +1,4 @@
-import { HideNsfw4pService } from '../domain/hideNsfw4p.js';
+import { HideNsfw4pService } from '../usecase/hideNsfw4p.js';
 
 export async function handler(event, lambdaContext) {
 	console.log('Start');
