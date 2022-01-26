@@ -4,6 +4,9 @@ import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import { DockerImageFunction, DockerImageCode } from 'aws-cdk-lib/aws-lambda';
 import { Bucket, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
+import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 
 export class HideNsfw4pStack extends Stack {
 	constructor(app: App, id: string) {
@@ -36,6 +39,18 @@ export class HideNsfw4pStack extends Stack {
 		});
 
 		rule.addTarget(new LambdaFunction(lambdaFn));
+
+		const alarm = lambdaFn.metricErrors().createAlarm(this, 'Alarm', {
+			threshold: 1,
+			evaluationPeriods: 1,
+			alarmName: 'HideNSFW4p Errors'
+		});
+
+		const topic = new Topic(this, 'Alert Topic');
+		const alertTo= StringParameter.valueForStringParameter(this, '/hide_nsfw4p/alert_to');
+		topic.addSubscription(new EmailSubscription(alertTo));
+
+		alarm.addAlarmAction(new SnsAction(topic));
 	}
 }
 
