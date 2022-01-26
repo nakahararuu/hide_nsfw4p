@@ -2,14 +2,17 @@ import { App, Stack, Duration } from 'aws-cdk-lib';
 import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import { DockerImageFunction, DockerImageCode } from 'aws-cdk-lib/aws-lambda';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Bucket, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 export class HideNsfw4pStack extends Stack {
 	constructor(app: App, id: string) {
 		super(app, id);
 
-		const bucket = new Bucket(this, 'MyBucket', { 'lifecycleRules': [{expiration: Duration.days(20)}] });
+		const bucket = new Bucket(this, 'MyBucket', {
+			lifecycleRules: [{expiration: Duration.days(20)}],
+			blockPublicAccess: BlockPublicAccess.BLOCK_ALL
+		});
 
 		const lambdaFn = new DockerImageFunction(this, 'Singleton', {
 			code: DockerImageCode.fromImageAsset('src/', {
