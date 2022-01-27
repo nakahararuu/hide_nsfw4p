@@ -12,12 +12,14 @@ export class HideNsfw4pStack extends Stack {
 	constructor(app: App, id: string) {
 		super(app, id);
 
-		const bucket = new Bucket(this, 'MyBucket', {
-			lifecycleRules: [{expiration: Duration.days(20)}],
-			blockPublicAccess: BlockPublicAccess.BLOCK_ALL
-		});
+		const lambdaFn = this.createLambdaFunction();
+		this.addS3Bucket(lambdaFn);
+		this.addScheduleEvent(lambdaFn);
+		this.addCloudWatchAlarm(lambdaFn);
+	}
 
-		const lambdaFn = new DockerImageFunction(this, 'Singleton', {
+	private createLambdaFunction() {
+		return new DockerImageFunction(this, 'Singleton', {
 			code: DockerImageCode.fromImageAsset('src/', {
 				cmd: [ "entry-point/lambda-handler.handler" ],
 				entrypoint: ["/lambda-entrypoint.sh"]
@@ -28,18 +30,28 @@ export class HideNsfw4pStack extends Stack {
 			environment: {
 				PIXIV_LOGIN_ID: StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_id'),
 				PIXIV_PASSWORD: StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_password'),
-				PIXIV_USER_ID: StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_user_id'),
-				BUCKET_NAME: bucket.bucketName
+				PIXIV_USER_ID: StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_user_id')
 			}
 		});
-		bucket.grantReadWrite(lambdaFn);
+	}
 
-		const rule = new Rule(this, 'Rule', {
-		  schedule: Schedule.rate(Duration.hours(5))
+	private addS3Bucket(lambdaFn: DockerImageFunction) {
+		const bucket = new Bucket(this, 'MyBucket', {
+			lifecycleRules: [{expiration: Duration.days(20)}],
+			blockPublicAccess: BlockPublicAccess.BLOCK_ALL
 		});
+		bucket.grantReadWrite(lambdaFn);
+		lambdaFn.addEnvironment('BUCKET_NAME', bucket.bucketName)
+	}
 
+	private addScheduleEvent(lambdaFn: DockerImageFunction) {
+		const rule = new Rule(this, 'Rule', {
+			schedule: Schedule.rate(Duration.hours(5))
+		});
 		rule.addTarget(new LambdaFunction(lambdaFn));
+	}
 
+	private addCloudWatchAlarm(lambdaFn: DockerImageFunction) {
 		const alarm = lambdaFn.metricErrors().createAlarm(this, 'Alarm', {
 			threshold: 1,
 			evaluationPeriods: 1,
