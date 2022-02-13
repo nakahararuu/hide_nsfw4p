@@ -9,6 +9,19 @@ export class BookmarkPage {
 	#context;
 	#page;
 
+	async #initBowser() {
+		await this.close();
+
+		const hasAuthenticationState = await hasState();
+		if (hasAuthenticationState) {
+			console.log('authentication state file found. trying to resotre it.');
+		}
+
+		this.#browser = await openBrowser();
+		this.#context = hasAuthenticationState ? await restoreState(this.#browser) : await this.#browser.newContext();
+		this.#page = await this.#context.newPage();
+	}
+
 	// ログインした後、CookieやLocalStrageをファイルにダンプ（次回以降のブラウザ起動時に使い回すため）
 	async #loginAndStoreAuthenticationState() {
 		await this.#page.click('text=ログイン');
@@ -22,14 +35,7 @@ export class BookmarkPage {
 	}
 
 	async openBookmarkPage() {
-		const hasAuthenticationState = await hasState();
-		if(hasAuthenticationState){
-			console.log('authentication state file found. trying to resotre it.');
-		}
-
-		this.#browser = await openBrowser();
-		this.#context = hasAuthenticationState ? await restoreState(this.#browser) : await this.#browser.newContext();
-		this.#page = await this.#context.newPage();
+		await this.#initBowser();
 
 		const navigationPromise = this.#page.waitForNavigation();
 		await this.#page.goto(BookmarkPage.#URL);
@@ -65,6 +71,9 @@ export class BookmarkPage {
 	}
 
 	async close() {
+		if(!this.#page){
+			return;
+		}
 		await this.#browser.close();
 	}
 
