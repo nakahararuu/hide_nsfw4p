@@ -1,17 +1,14 @@
 import { BookmarkPage } from '../domain/pixivBookmarkPage.js';
 
-export class HideNsfw4pService {
+export class HideNsfwPicService {
 	#bookmarkPageObject;
 
 	async execute() {
 		try {
-			await this.#runScript();
+			await this.#hideNsfwPics();
 		} catch (error) {
 			try {
-				console.warn('trying to take snapshot of the error');
-				const label = `error-${Date.now()}`;
-				await this.#bookmarkPageObject.snapshot(label);
-				console.warn(`uploaded snapshot file as ${label}.png`);
+				await this.#snapshot();
 			} catch (snapshotError) {
 				console.error('failed to take snapshot', snapshotError);
 			} finally {
@@ -21,7 +18,7 @@ export class HideNsfw4pService {
 		}
 	};
 
-	async #runScript() {
+	async #hideNsfwPics() {
 		console.log('starting browser setup.');
 		this.#bookmarkPageObject = new BookmarkPage();
 
@@ -40,6 +37,13 @@ export class HideNsfw4pService {
 		await this.#bookmarkPageObject.clickHideBookmarkButton();
 
 		await this.#bookmarkPageObject.close();
+	};
+
+	async #snapshot() {
+		console.warn('trying to take snapshot of the error');
+		const label = `error-${Date.now()}`;
+		await this.#bookmarkPageObject.snapshot(label);
+		console.warn(`uploaded snapshot file as ${label}.png`);
 	};
 };
 

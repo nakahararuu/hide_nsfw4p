@@ -1,8 +1,8 @@
-import { HideNsfw4pService } from '../usecase/hideNsfw4p.js';
+import { HideNsfwPicService } from '../usecase/hideNsfwPicService.js';
 
 export async function handler(event, lambdaContext) {
 	console.log('Start');
-	const service = new HideNsfw4pService();
+	const service = new HideNsfwPicService();
 	await service.execute();
 	console.log('End');
 };
