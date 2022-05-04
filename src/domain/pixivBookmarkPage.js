@@ -25,8 +25,8 @@ export class BookmarkPage {
 	// ログインした後、CookieやLocalStrageをファイルにダンプ（次回以降のブラウザ起動時に使い回すため）
 	async #loginAndStoreAuthenticationState() {
 		await this.#page.click('text=ログイン');
-		await this.#page.fill('text=ログインパスワードがわからない >> [placeholder="メールアドレス / pixiv ID"]', PIXIV_LOGIN_ID);
-		await this.#page.fill('text=ログインパスワードがわからない >> [placeholder="パスワード"]', PIXIV_PASSWORD);
+		await this.#page.fill('input[placeholder="メールアドレスまたはpixiv ID"]', PIXIV_LOGIN_ID);
+		await this.#page.fill('input[placeholder="パスワード"]', PIXIV_PASSWORD);
 		await Promise.all([
 			this.#page.waitForNavigation(),
 			this.#page.click('#LoginComponent >> text=ログイン')
