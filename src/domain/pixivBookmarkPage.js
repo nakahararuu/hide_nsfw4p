@@ -29,7 +29,7 @@ export class BookmarkPage {
 		await this.#page.fill('input[placeholder="パスワード"]', PIXIV_PASSWORD);
 		await Promise.all([
 			this.#page.waitForNavigation(),
-			this.#page.click('#LoginComponent >> text=ログイン')
+			this.#page.click('text=ログイン')
 		]);
 		await storeState(this.#context);
 	}
