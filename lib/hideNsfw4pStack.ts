@@ -37,7 +37,7 @@ export class HideNsfw4pStack extends Stack {
 
 	private addS3Bucket(lambdaFn: DockerImageFunction) {
 		const bucket = new Bucket(this, 'MyBucket', {
-			lifecycleRules: [{expiration: Duration.days(20)}],
+			lifecycleRules: [{expiration: Duration.days(5)}],
 			blockPublicAccess: BlockPublicAccess.BLOCK_ALL
 		});
 		bucket.grantReadWrite(lambdaFn);

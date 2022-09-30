@@ -73,8 +73,13 @@ export class BookmarkPage {
 	async close() {
 		await this.#page?.close();
 		this.#page = null;
-		await this.#context?.close();
-		this.#context = null;
+
+		if(this.#context){
+			await storeState(this.#context);
+			await this.#context.close();
+			this.#context = null;
+		}
+
 		await this.#browser?.close();
 		this.#browser = null;
 	}
