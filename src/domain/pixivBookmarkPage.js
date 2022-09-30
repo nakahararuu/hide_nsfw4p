@@ -22,8 +22,7 @@ export class BookmarkPage {
 		this.#page = await this.#context.newPage();
 	}
 
-	// ログインした後、CookieやLocalStrageをファイルにダンプ（次回以降のブラウザ起動時に使い回すため）
-	async #loginAndStoreAuthenticationState() {
+	async #login() {
 		await this.#page.click('text=ログイン');
 		await this.#page.fill('input[placeholder="メールアドレスまたはpixiv ID"]', PIXIV_LOGIN_ID);
 		await this.#page.fill('input[placeholder="パスワード"]', PIXIV_PASSWORD);
@@ -31,7 +30,6 @@ export class BookmarkPage {
 			this.#page.waitForNavigation(),
 			this.#page.click('text=ログイン')
 		]);
-		await storeState(this.#context);
 	}
 
 	async openBookmarkPage() {
@@ -44,7 +42,7 @@ export class BookmarkPage {
 
 		if(this.#page.url() !== BookmarkPage.#URL) {
 			console.log('valid authentication state (cookie, localstrage) not found. trying login.');
-			await this.#loginAndStoreAuthenticationState(this.#page);
+			await this.#login();
 		}
 
 		await this.#page.waitForSelector('text=ブックマーク管理');
