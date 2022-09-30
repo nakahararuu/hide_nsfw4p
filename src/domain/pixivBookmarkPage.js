@@ -71,10 +71,12 @@ export class BookmarkPage {
 	}
 
 	async close() {
-		if(!this.#page){
-			return;
-		}
-		await this.#browser.close();
+		await this.#page?.close();
+		this.#page = null;
+		await this.#context?.close();
+		this.#context = null;
+		await this.#browser?.close();
+		this.#browser = null;
 	}
 
 	async snapshot(label) {
