@@ -3,7 +3,6 @@ import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import { DockerImageFunction, DockerImageCode } from 'aws-cdk-lib/aws-lambda';
 import { Bucket, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
-import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
@@ -11,6 +10,8 @@ import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 export class HideNsfw4pStack extends Stack {
 	constructor(app: App, id: string) {
 		super(app, id);
+
+		this.assertRequiredEnvs();
 
 		const lambdaFn = this.createLambdaFunction();
 		this.addS3Bucket(lambdaFn);
@@ -28,9 +29,9 @@ export class HideNsfw4pStack extends Stack {
 			memorySize: 1800,
 			timeout: Duration.seconds(300),
 			environment: {
-				PIXIV_LOGIN_ID: StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_id'),
-				PIXIV_PASSWORD: StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_login_password'),
-				PIXIV_USER_ID: StringParameter.valueForStringParameter(this, '/hide_nsfw4p/pixiv_user_id')
+				PIXIV_LOGIN_ID: process.env.PIXIV_LOGIN_ID!,
+				PIXIV_PASSWORD: process.env.PIXIV_PASSWORD!,
+				PIXIV_USER_ID: process.env.PIXIV_USER_ID!
 			}
 		});
 	}
@@ -59,10 +60,21 @@ export class HideNsfw4pStack extends Stack {
 		});
 
 		const topic = new Topic(this, 'Alert Topic');
-		const alertTo= StringParameter.valueForStringParameter(this, '/hide_nsfw4p/alert_to');
-		topic.addSubscription(new EmailSubscription(alertTo));
+		topic.addSubscription(new EmailSubscription(process.env.ALERT_TO!));
 
 		alarm.addAlarmAction(new SnsAction(topic));
 	}
+
+	private assertRequiredEnvs():void {
+		['PIXIV_LOGIN_ID','PIXIV_PASSWORD','PIXIV_USER_ID','ALERT_TO']
+			.forEach(envName => this.assertIsDefined(process.env[envName], envName));
+	}
+
+	private	assertIsDefined<T>(val: T, envName: string): asserts val is NonNullable<T> {
+		if (val === undefined || val === null) {
+			throw new Error( `Expected '${envName}' to be defined, but not definded.`);
+		}
+	}
+
 }
 
