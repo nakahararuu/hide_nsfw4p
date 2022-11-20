@@ -2,6 +2,7 @@ import { App, Stack, Duration } from 'aws-cdk-lib';
 import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import { DockerImageFunction, DockerImageCode } from 'aws-cdk-lib/aws-lambda';
+import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
 import { Bucket, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
@@ -22,6 +23,7 @@ export class HideNsfw4pStack extends Stack {
 	private createLambdaFunction() {
 		return new DockerImageFunction(this, 'Singleton', {
 			code: DockerImageCode.fromImageAsset('src/', {
+				platform: Platform.LINUX_AMD64,
 				cmd: [ "entry-point/lambda-handler.handler" ],
 				entrypoint: ["/lambda-entrypoint.sh"]
 			}),
