@@ -26,5 +26,8 @@
   "devDependencies": {
     "playwright": "^1.13.1",
     "typescript": "~3.7.2"
+  },
+  "overrides": {
+    "node-fetch": "2.6.7"
   }
 }
