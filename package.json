@@ -21,7 +21,7 @@
   "homepage": "https://github.com/nakahararuu/hide_nsfw4p#readme",
   "devDependencies": {
     "@aws-cdk/assert": "^2.0.0",
-    "@types/node": "^16.0.0",
+    "@types/node": "^18.0.0",
     "aws-cdk": "^2.50.0",
     "aws-cdk-lib": "^2.185.0",
     "constructs": "^10.0.0",
