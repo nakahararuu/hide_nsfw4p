@@ -1,8 +1,9 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
-import { default as chromium } from 'chrome-aws-lambda';
+import chromium from 'chrome-aws-lambda';
 import * as playwright from 'playwright-core';
 import * as path from 'path';
 import * as fs from 'fs';
+import { Readable } from 'stream';
 
 // TODO 環境変数から取得
 const s3 = new S3Client({ region: "ap-northeast-1" });
@@ -20,7 +21,7 @@ export async function openBrowser() {
 	});
 }
 
-export async function storeState(context) {
+export async function storeState(context: playwright.BrowserContext) {
 	await context.storageState({ path: tmpStateFile });
 
 	const uploadParams = {
@@ -36,7 +37,7 @@ export async function storeState(context) {
 	}
 }
 
-export async function restoreState(browser) {
+export async function restoreState(browser: playwright.Browser) {
 	try {
 		await getS3Object(path.basename(tmpStateFile), tmpStateFile);
 		return await browser.newContext({ storageState: tmpStateFile });
@@ -46,18 +47,17 @@ export async function restoreState(browser) {
 	}
 }
 
-async function getS3Object(key, destPath){
-	const getParams = {
+async function getS3Object(key: string, destPath: string) {
+	const data = await s3.send(new GetObjectCommand({
 		Bucket: BUCKET_NAME,
 		Key: key
-	};
-	const data = await s3.send(new GetObjectCommand(getParams));
+	}));
 
-	return new Promise(async (resolve, reject) => {
+	return new Promise<void>((resolve, reject) => {
 		const ws = fs.createWriteStream(destPath);
 		ws.on('finish', () => resolve());
 		ws.on('error', (err) => reject(err));
-		data.Body.pipe(ws);
+		(data.Body as Readable).pipe(ws);
 	});
 };
 
@@ -76,7 +76,7 @@ export async function hasState() {
 	}
 }
 
-export async function snapshot(page, label) {
+export async function snapshot(page: playwright.Page, label: string) {
 	const fileName = `${label}.png`;
 	const tmpFilePath = `/tmp/${fileName}`;
 	await page.screenshot({path: tmpFilePath});

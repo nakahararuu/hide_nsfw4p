@@ -5,8 +5,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "tsc",
     "test-locally": "PWDEBUG=1 npm run run-locally",
-    "run-locally": "RUN_LOCALLY=true node entry-point/local-main.js"
+    "run-locally": "npm run build && RUN_LOCALLY=true node entry-point/local-main.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "playwright": "^1.13.1",
-    "typescript": "~3.7.2"
+    "@types/node": "18.19.84",
+    "typescript": "~5.8.2"
   }
 }

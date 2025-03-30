@@ -8,12 +8,12 @@ export async function openBrowser() {
 	return await chromium.launch();
 }
 
-export async function storeState(context) {
+export async function storeState(context: any) {
 	await context.storageState({ path: stateFile });
 	console.log(`stored authentication state into ${stateFile}` );
 }
 
-export async function restoreState(browser) {
+export async function restoreState(browser: any) {
 	return await browser.newContext({ storageState: stateFile });
 }
 
@@ -21,7 +21,7 @@ export async function hasState() {
 	return fs.existsSync(stateFile);
 }
 
-export async function snapshot(page, label) {
+export async function snapshot(page: any, label: string) {
 	const filePath = `.state/snapshot/${label}.png`;
 	await page.screenshot({path: filePath});
 	console.log(`stored snapshot file at ${filePath}`);
