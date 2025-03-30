@@ -23,13 +23,11 @@ export class BookmarkPage {
 	}
 
 	private async login(): Promise<void> {
-		await this.page.click('text=ログイン');
+		await this.page.getByRole('link', { name: 'ログイン' }).click();
 		await this.page.fill('input[placeholder="メールアドレスまたはpixiv ID"]', PIXIV_LOGIN_ID);
 		await this.page.fill('input[placeholder="パスワード"]', PIXIV_PASSWORD);
-		await Promise.all([
-			this.page.waitForNavigation(),
-			this.page.click('text=ログイン')
-		]);
+		await this.page.getByRole('button', { name: 'ログイン', exact: true }).click();
+		await this.page.waitForNavigation();
 	}
 
 	public async openBookmarkPage(): Promise<void> {
