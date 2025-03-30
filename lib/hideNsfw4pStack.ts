@@ -24,7 +24,7 @@ export class HideNsfw4pStack extends Stack {
 		return new DockerImageFunction(this, 'Singleton', {
 			code: DockerImageCode.fromImageAsset('src/', {
 				platform: Platform.LINUX_AMD64,
-				cmd: [ "entry-point/lambda-handler.handler" ],
+				cmd: [ ".dist/entry-point/lambda-handler.handler" ],
 				entrypoint: ["/lambda-entrypoint.sh"]
 			}),
 			retryAttempts: 0,
