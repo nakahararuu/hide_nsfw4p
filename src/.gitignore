@@ -1,4 +1,5 @@
 # State files for a browser
 .state/
+
 # Ignore all JavaScript files
-*.js
+.dist/

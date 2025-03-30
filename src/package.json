@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "test-locally": "PWDEBUG=1 npm run run-locally",
-    "run-locally": "npm run build && RUN_LOCALLY=true node entry-point/local-main.js"
+    "run-locally": "npm run build && RUN_LOCALLY=true node .dist/entry-point/local-main.js"
   },
   "repository": {
     "type": "git",
