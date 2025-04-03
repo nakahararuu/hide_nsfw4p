@@ -20,50 +20,45 @@ export class BookmarkPage {
 		this.browser = await openBrowser();
 		this.context = hasAuthenticationState ? await restoreState(this.browser) : await this.browser.newContext();
 		this.page = await this.context.newPage();
+
+		await this.page.setViewportSize({ width: 1280, height: 696 });
 	}
 
 	private async login(): Promise<void> {
 		await this.page.getByRole('link', { name: 'ログイン' }).click();
-		await this.page.fill('input[placeholder="メールアドレスまたはpixiv ID"]', PIXIV_LOGIN_ID);
-		await this.page.fill('input[placeholder="パスワード"]', PIXIV_PASSWORD);
+		await this.page.getByPlaceholder('メールアドレスまたはpixiv ID').fill(PIXIV_LOGIN_ID);
+		await this.page.getByPlaceholder('パスワード').fill(PIXIV_PASSWORD);
 		await this.page.getByRole('button', { name: 'ログイン', exact: true }).click();
-		await this.page.waitForNavigation();
 	}
 
 	public async openBookmarkPage(): Promise<void> {
 		await this.initBrowser();
 
-		const navigationPromise = this.page.waitForNavigation();
 		await this.page.goto(BookmarkPage.URL);
-		await this.page.setViewportSize({ width: 1280, height: 696 });
-		await navigationPromise;
-
 		if (this.page.url() !== BookmarkPage.URL) {
 			console.log('valid authentication state (cookie, localstorage) not found. trying login.');
 			await this.login();
 		}
 
-		await this.page.waitForSelector('text=ブックマーク管理');
+		await this.page.waitForURL(BookmarkPage.URL);
 	}
 
 	public async hasNsfwArtworks(): Promise<boolean> {
-		const nsfwArtworks = await this.page.$$('text=R-18');
-		return nsfwArtworks.length > 0;
+        const nsfwArtworksCount = await this.page.getByText('R-18').count();
+		return nsfwArtworksCount > 0;
 	}
 
 	public async clickBookmarkManagementButton(): Promise<void> {
-		await this.page.waitForSelector('text=ブックマーク管理');
 		await this.page.click('text=ブックマーク管理');
 	}
 
 	public async clickNsfwPics(): Promise<void> {
-		await this.page.$$eval('text=R-18', (elements: any) => elements.forEach((e: any) => e.click()));
+		await this.page.locator('text=R-18').evaluateAll((elements: any) => elements.forEach((e: any) => e.click()));
 	}
 
 	public async clickHideBookmarkButton(): Promise<void> {
-		await this.page.waitForSelector('div[role="button"]:has-text("非公開にする")');
-		await this.page.click('div[role="button"]:has-text("非公開にする")');
-		await this.page.waitForSelector('text=ブックマーク管理');
+		await this.page.getByRole('button').filter({hasText: "非公開にする"}).click();
+		await this.page.getByText('ブックマーク管理').waitFor();
 	}
 
 	public async close(): Promise<void> {
