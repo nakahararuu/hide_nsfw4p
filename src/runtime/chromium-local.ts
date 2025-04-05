@@ -14,6 +14,7 @@ export async function storeState(context: any) {
 }
 
 export async function restoreState(browser: any) {
+	console.log('authentication state file found. trying to restore it.')
 	return await browser.newContext({ storageState: stateFile });
 }
 

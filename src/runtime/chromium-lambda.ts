@@ -38,6 +38,7 @@ export async function storeState(context: playwright.BrowserContext) {
 }
 
 export async function restoreState(browser: playwright.Browser) {
+	console.log('authentication state file found. trying to restore it.')
 	try {
 		await getS3Object(path.basename(tmpStateFile), tmpStateFile);
 		return await browser.newContext({ storageState: tmpStateFile });
