@@ -1,6 +1,6 @@
 import { HideNsfwPicService } from '../usecase/hideNsfwPicService.js';
 
-export async function handler(event: any, lambdaContext: any): Promise<void> {
+export async function handler(): Promise<void> {
 	let service;
 	try {
 		console.log('Start');

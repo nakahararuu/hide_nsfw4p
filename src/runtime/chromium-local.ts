@@ -1,4 +1,3 @@
-import * as path from 'path';
 import * as fs from 'fs';
 import { chromium } from 'playwright';
 import { ChromiumFunctions } from "./chromium-functions.js";
