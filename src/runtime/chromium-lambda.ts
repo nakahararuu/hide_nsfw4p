@@ -4,6 +4,7 @@ import * as playwright from 'playwright-core';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Readable } from 'stream';
+import { ChromiumFunctions } from "./chromium-functions.js";
 
 // TODO 環境変数から取得
 const s3 = new S3Client({ region: "ap-northeast-1" });
@@ -11,7 +12,7 @@ const s3 = new S3Client({ region: "ap-northeast-1" });
 const { BUCKET_NAME } = process.env;
 const tmpStateFile = '/tmp/state.json';
 
-export async function openBrowser() {
+export const openBrowser: ChromiumFunctions['openBrowser'] = async () => {
 	await chromium.font('https://fonts.gstatic.com/ea/notosansjapanese/v6/NotoSansJP-Regular.woff2');
 
 	return await playwright.chromium.launch({
@@ -21,7 +22,7 @@ export async function openBrowser() {
 	});
 }
 
-export async function storeState(context: playwright.BrowserContext) {
+export const storeState: ChromiumFunctions['storeState'] = async (context) => {
 	await context.storageState({ path: tmpStateFile });
 
 	const uploadParams = {
@@ -37,7 +38,7 @@ export async function storeState(context: playwright.BrowserContext) {
 	}
 }
 
-export async function restoreState(browser: playwright.Browser) {
+export const restoreState: ChromiumFunctions['restoreState'] = async (browser) => {
 	console.log('authentication state file found. trying to restore it.')
 	try {
 		await getS3Object(path.basename(tmpStateFile), tmpStateFile);
@@ -62,7 +63,7 @@ async function getS3Object(key: string, destPath: string) {
 	});
 };
 
-export async function hasState() {
+export const hasState: ChromiumFunctions['hasState'] = async () => {
 	const headParams = {
 		Bucket: BUCKET_NAME,
 		Key: path.basename(tmpStateFile)
@@ -77,7 +78,7 @@ export async function hasState() {
 	}
 }
 
-export async function snapshot(page: playwright.Page, label: string) {
+export const snapshot: ChromiumFunctions['snapshot'] = async (page, label) => {
 	const fileName = `${label}.png`;
 	const tmpFilePath = `/tmp/${fileName}`;
 	await page.screenshot({path: tmpFilePath});
