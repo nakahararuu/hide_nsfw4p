@@ -1,6 +1,5 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
-import chromium from 'chrome-aws-lambda';
-import * as playwright from 'playwright-core';
+import { chromium } from 'playwright';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Readable } from 'stream';
@@ -13,12 +12,14 @@ const { BUCKET_NAME } = process.env;
 const tmpStateFile = '/tmp/state.json';
 
 export const openBrowser: ChromiumFunctions['openBrowser'] = async () => {
-	await chromium.font('https://fonts.gstatic.com/ea/notosansjapanese/v6/NotoSansJP-Regular.woff2');
-
-	return await playwright.chromium.launch({
-		args: chromium.args,
-		executablePath: await chromium.executablePath,
-		headless: chromium.headless,
+	return await chromium.launch({
+		args: [
+			'--single-process', // required
+			'--window-size=1920,1080',
+			'--use-angle=swiftshader', // required
+			'--disable-setuid-sandbox',
+			'--no-sandbox',
+		]
 	});
 }
 

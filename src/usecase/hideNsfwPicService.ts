@@ -25,8 +25,6 @@ export class HideNsfwPicService {
 		const context = await hasState() ? await restoreState(browser) : await browser.newContext();
 		const page = await context.newPage();
 
-		await page.setViewportSize({ width: 1280, height: 696 });
-		
 		return new HideNsfwPicService(page, browser, context);
 	}
 
