@@ -1,29 +1,15 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
-import { chromium } from 'playwright';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Readable } from 'stream';
-import { ChromiumFunctions } from "./chromium-functions.js";
+import { BrowserContextStorage } from "./browser-context-storage.d.js";
 
-// TODO 環境変数から取得
 const s3 = new S3Client({ region: "ap-northeast-1" });
 
 const { BUCKET_NAME } = process.env;
 const tmpStateFile = '/tmp/state.json';
 
-export const openBrowser: ChromiumFunctions['openBrowser'] = async () => {
-	return await chromium.launch({
-		args: [
-			'--single-process', // required
-			'--window-size=1920,1080',
-			'--use-angle=swiftshader', // required
-			'--disable-setuid-sandbox',
-			'--no-sandbox',
-		]
-	});
-}
-
-export const storeState: ChromiumFunctions['storeState'] = async (context) => {
+export const storeState: BrowserContextStorage['storeState'] = async (context) => {
 	await context.storageState({ path: tmpStateFile });
 
 	const uploadParams = {
@@ -39,7 +25,7 @@ export const storeState: ChromiumFunctions['storeState'] = async (context) => {
 	}
 }
 
-export const restoreState: ChromiumFunctions['restoreState'] = async (browser) => {
+export const restoreState: BrowserContextStorage['restoreState'] = async (browser) => {
 	console.log('authentication state file found. trying to restore it.')
 	try {
 		await getS3Object(path.basename(tmpStateFile), tmpStateFile);
@@ -64,7 +50,7 @@ async function getS3Object(key: string, destPath: string) {
 	});
 };
 
-export const hasState: ChromiumFunctions['hasState'] = async () => {
+export const hasState: BrowserContextStorage['hasState'] = async () => {
 	const headParams = {
 		Bucket: BUCKET_NAME,
 		Key: path.basename(tmpStateFile)
@@ -79,7 +65,7 @@ export const hasState: ChromiumFunctions['hasState'] = async () => {
 	}
 }
 
-export const snapshot: ChromiumFunctions['snapshot'] = async (page, label) => {
+export const snapshot: BrowserContextStorage['snapshot'] = async (page, label) => {
 	const fileName = `${label}.png`;
 	const tmpFilePath = `/tmp/${fileName}`;
 	await page.screenshot({path: tmpFilePath});
@@ -95,4 +81,3 @@ export const snapshot: ChromiumFunctions['snapshot'] = async (page, label) => {
 		console.error("snapshot file uploading failed", err);
 	}
 }
-

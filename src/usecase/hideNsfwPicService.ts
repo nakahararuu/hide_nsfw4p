@@ -1,7 +1,9 @@
-import { openBrowser, restoreState, hasState, storeState, snapshot } from '../runtime/chromium.js';
 import { PixivLoginPage } from '../domain/pixivLoginPage.js';
 import { BookmarkPage } from '../domain/pixivBookmarkPage.js';
-import { Browser, BrowserContext, Page } from 'playwright';
+
+import { chromium, Browser, BrowserContext, Page } from 'playwright';
+import { launchOptions } from '../runtime/browser-launch-options.js';
+import { restoreState, hasState, storeState, snapshot } from '../runtime/browser-context-storage.js';
 
 export class HideNsfwPicService {
 	private page: Page;
@@ -21,7 +23,7 @@ export class HideNsfwPicService {
 	public static async initContext(): Promise<HideNsfwPicService> {
 		console.log('starting browser setup.');
 
-		const browser = await openBrowser();
+		const browser = await chromium.launch(launchOptions);
 		const context = await hasState() ? await restoreState(browser) : await browser.newContext();
 		const page = await context.newPage();
 
