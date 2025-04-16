@@ -21,7 +21,9 @@ export class BookmarkPage {
 	}
 
 	public async hasNsfwArtworks(): Promise<boolean> {
-		const nsfwArtworksCount = await this.page.getByText('R-18').count();
+		const nsfwArtworksCount = await this.page.getByText('R-18')
+			.filter({visible: true})
+			.count();
 		return nsfwArtworksCount > 0;
 	}
 
@@ -30,7 +32,9 @@ export class BookmarkPage {
 	}
 
 	public async clickNsfwPics(): Promise<void> {
-		await this.page.locator('text=R-18').evaluateAll((elements: any) => elements.forEach((e: any) => e.click()));
+		await this.page.locator('text=R-18')
+			.filter({ visible: true })
+			.evaluateAll((elements: any) => elements.forEach((e: any) => e.click()));
 	}
 
 	public async clickHideBookmarkButton(): Promise<void> {
