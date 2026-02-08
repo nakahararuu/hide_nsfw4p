@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/nakahararuu/hide_nsfw4p#readme",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.787.0",
+    "@aws-sdk/client-s3": "^3.985.0",
     "aws-lambda-ric": "^4.0.1",
     "playwright": "^1.51.1",
     "playwright-core": "^1.13.1"
